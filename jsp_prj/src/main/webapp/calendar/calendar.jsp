@@ -59,6 +59,7 @@ a:hover {
 .calTitle {
     font-size: 25px;
     font-weight: bold;
+    
 }
 
 #calTab {
