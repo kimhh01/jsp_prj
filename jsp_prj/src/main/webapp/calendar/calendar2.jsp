@@ -13,6 +13,7 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet">
+      
 
 <style type="text/css">
 
@@ -117,6 +118,19 @@ a:hover {
 }
 
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	
+});
+
+function moveCal(year, month){
+    $("#year").val(year);
+    $("#month").val(month);
+
+    $("#calfrm").submit();
+}
+</script>
 </head>
 
 <body>
@@ -128,72 +142,76 @@ a:hover {
     <div id="container">
 
         <%
-			Calendar cal = Calendar.getInstance();
-			Calendar today = Calendar.getInstance();
-			
-			String year = request.getParameter("year");
-			String month = request.getParameter("month");
-			
-			if (year != null && month != null) {
-			
-			    int paramYear = Integer.parseInt(year);
-			    int paramMonth = Integer.parseInt(month);
-			
-			    cal.set(paramYear, paramMonth - 1, 1);
-			}
-			
-			int nowYear = cal.get(Calendar.YEAR);
-			int nowMonth = cal.get(Calendar.MONTH) + 1;
-			
-			// 실제 오늘 날짜
-			int nowDay = today.get(Calendar.DAY_OF_MONTH);
-			
-			// 이전달 / 다음달
-			Calendar prevCal = (Calendar) cal.clone();
-			prevCal.add(Calendar.MONTH, -1);
-			
-			Calendar nextCal = (Calendar) cal.clone();
-			nextCal.add(Calendar.MONTH, 1);
-			
-			// 달력 출력용
-			Calendar printCal = (Calendar) cal.clone();
-			printCal.set(Calendar.DAY_OF_MONTH, 1);
-			
-			// 시작 요일
-			int startDayOfWeek = printCal.get(Calendar.DAY_OF_WEEK);
-			
-			// 마지막 날짜
-			int lastDay = printCal.getActualMaximum(Calendar.DAY_OF_MONTH);
-			
-			// 현재 보고 있는 달이 오늘이 속한 달인지 확인
-			StringBuilder toDay = new StringBuilder();
-			
-			toDay.append(today.get(Calendar.YEAR))
-			     .append(today.get(Calendar.MONTH) + 1);
-			
-			StringBuilder selectDay = new StringBuilder();
-			
-			selectDay.append(nowYear)
-			         .append(nowMonth);
-			
-			boolean toDayFlag =
-			        toDay.toString().equals(selectDay.toString());
-			%>
-
+		Calendar cal = Calendar.getInstance();
+		
+		String year = request.getParameter("year");
+		String month = request.getParameter("month");
+		
+		Calendar today = Calendar.getInstance();
+		
+		if (year != null && month != null) {
+		
+		    int paramYear = Integer.parseInt(year);
+		    int paramMonth = Integer.parseInt(month);
+		
+		    cal.set(paramYear, paramMonth - 1, 1);
+		}
+		
+		int nowYear = cal.get(Calendar.YEAR);
+		int nowMonth = cal.get(Calendar.MONTH) + 1;
+		int nowDay = cal.get(Calendar.DAY_OF_MONTH);
+		
+		Calendar prevCal = (Calendar) cal.clone();
+		prevCal.add(Calendar.MONTH, -1);
+		
+		Calendar nextCal = (Calendar) cal.clone();
+		nextCal.add(Calendar.MONTH, 1);
+		
+		Calendar printCal = (Calendar) cal.clone();
+		
+		// 이번 달 1일로 설정
+		printCal.set(Calendar.DAY_OF_MONTH, 1);
+		
+		// 이번 달 시작 요일
+		int startDayOfWeek = printCal.get(Calendar.DAY_OF_WEEK);
+		
+		// 이번 달 마지막 날짜
+		int lastDay = printCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
+		StringBuilder toDay = new StringBuilder();
+		//log(toDay.toString());
+		
+		toDay.append(today.get(Calendar.YEAR)).append(today.get(Calendar.MONTH)+1);
+		StringBuilder selectDay= new StringBuilder();
+		selectDay.append(nowYear).append(nowMonth);
+		//log(selectDay.toString());
+		
+		//log(String.valueOf(toDay.toString().equals(selectDay.toString())));
+		// 오늘을 표현하기 위한 flag 변수 
+		boolean toDayFlag = toDay.toString().equals(selectDay.toString());
+		%>
+		<form action="calendar2.jsp" method="post" id="calfrm">
+		    <input type="hidden" name="year" id="year">
+		    <input type="hidden" name="month" id="month">
+		</form>
         <div id="calWrap">
 
             <div id="calHeader">
-                <a href="calendar.jsp?year=<%=prevCal.get(Calendar.YEAR)%>&month=<%=prevCal.get(Calendar.MONTH)+1%>">
+				<a href="javascript:void(0);"
+				   onclick="moveCal(<%=prevCal.get(Calendar.YEAR)%>, <%=prevCal.get(Calendar.MONTH)+1%>)"
+				   title="이전달">
 				    &lt;&lt;
 				</a>
 
-                <a href="calendar.jsp?year=<%=today.get(Calendar.YEAR)%>&month=<%=today.get(Calendar.MONTH)+1%>">
+                <a href="calendar2.jsp?year=<%=today.get(Calendar.YEAR)%>&month=<%=today.get(Calendar.MONTH)+1%>">
                 <span class="calTitle" title="오늘">
                     <%= nowYear %>.<%= nowMonth %>
                 </span>
 				</a>
 
-                <a href="calendar.jsp?year=<%=nextCal.get(Calendar.YEAR)%>&month=<%=nextCal.get(Calendar.MONTH)+1%>">
+				<a href="javascript:void(0);"
+				   onclick="moveCal(<%=nextCal.get(Calendar.YEAR)%>, <%=nextCal.get(Calendar.MONTH)+1%>)"
+				   title="다음달">
 				    &gt;&gt;
 				</a>
             </div>
